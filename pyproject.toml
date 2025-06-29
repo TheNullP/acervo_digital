@@ -6,16 +6,19 @@ authors = [
     {name = "TheNullP",email = "mfreitasc0@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = "^3.13"
 dependencies = [
     "fastapi[standard] (>=0.115.14,<0.116.0)",
     "sqlalchemy (>=2.0.41,<3.0.0)",
-    "psycopg (>=3.2.9,<4.0.0)"
+    "psycopg (>=3.2.9,<4.0.0)",
+    "taskipy (>=1.14.1,<2.0.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "acervo_digital", from = "src"}]
 
+[tool.taskipy.tasks]
+run = "uvicorn acervo_digital.app:app"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
