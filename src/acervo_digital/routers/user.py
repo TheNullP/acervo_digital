@@ -75,3 +75,22 @@ def update_user(
         status_code=200
     )
 
+@router.delete('/deleteUser')
+def delete_user(
+    userId: int,
+    db: Session = Depends(get_db)
+):
+    exists = db.query(User).filter_by(id=userId).first()
+
+    if not exists:
+        raise HTTPException(
+            detail={'msg': 'Usuário não localizado.'},
+            status_code=404
+        )
+    db.delete(exists)
+    db.commit()
+
+    return JSONResponse(
+        content={'msg': 'Deletado com sucesso.'},
+        status_code=200
+    )

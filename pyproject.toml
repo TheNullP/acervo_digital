@@ -11,14 +11,15 @@ dependencies = [
     "fastapi[standard] (>=0.115.14,<0.116.0)",
     "sqlalchemy (>=2.0.41,<3.0.0)",
     "psycopg (>=3.2.9,<4.0.0)",
-    "taskipy (>=1.14.1,<2.0.0)"
+    "taskipy (>=1.14.1,<2.0.0)",
+    "uvicorn (>=0.35.0,<0.36.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "acervo_digital", from = "src"}]
 
 [tool.taskipy.tasks]
-run = "uvicorn acervo_digital.app:app"
+run = "fastapi dev src/acervo_digital/app.py --host 0.0.0.0 --port 8088"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
