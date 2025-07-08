@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends, Form
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from acervo_digital.schemas.user_schema import UserSchema
 
 from acervo_digital.core.database import User, get_db
+from acervo_digital.core.security import get_password_hash, verify_password
+from acervo_digital.schemas.user_schema import UserSchema
 
 
 router = APIRouter(tags=["user"])
@@ -34,7 +35,7 @@ def create_user(
         )
     new_user = User(
         username=username,
-        password=password
+        password=get_password_hash(password)
     ) 
 
     db.add(new_user)
@@ -92,5 +93,25 @@ def delete_user(
 
     return JSONResponse(
         content={'msg': 'Deletado com sucesso.'},
+        status_code=200
+    )
+
+
+@router.post('/verify')
+def verify_user(
+    user: UserSchema,
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter_by(username=user.password).first()
+
+    testPass = verify_password(user.password, user.password)
+
+    if not testPass:
+        raise HTTPException(
+            detail={'msg':'Senha ou Usuario incorreto.'},
+            status_code=401
+        )
+    return JSONResponse(
+        content={'msg': 'Sucesso.'},
         status_code=200
     )
