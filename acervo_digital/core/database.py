@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Mapped, mapped_column, registry, sessionmaker
 from sqlalchemy import ForeignKey, create_engine
 
+from acervo_digital.core.settings import Settings
 
+
+settings = Settings()
 reg = registry()
 
-engine = create_engine('postgresql+psycopg://docker:docker@0.0.0.0:5435/docker')
+engine = create_engine(settings.DB_URL)
 
 @reg.mapped_as_dataclass
 class User:
