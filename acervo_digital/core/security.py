@@ -3,9 +3,17 @@ from passlib.context  import CryptContext
 from sqlalchemy.orm import Session
 
 from acervo_digital.core.database import User
+from acervo_digital.core.settings import Settings
 from acervo_digital.schemas.user_schema import UserSchema
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+settings = Settings()
+
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM =  settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+
+
 
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
@@ -35,5 +43,5 @@ class Auth2:
             )
         return auth_user
 
-    def create_token_access(self):
+    def create_access_token(self):
         pass
