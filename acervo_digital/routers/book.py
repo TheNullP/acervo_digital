@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from acervo_digital.core.database import Book, User, get_db
+from acervo_digital.core.security import verify
 
 
 router = APIRouter(tags=["book"])
@@ -13,14 +14,20 @@ def reade_book(db: Session = Depends(get_db)):
     books = db.query(Book).all()
     return books
 
+@router.get('/read')
+def read_my_book(db: Session = Depends(get_db), Auth_user: Book = Depends(verify)):
+    books = db.query(Book).filter_by(id_user=Auth_user.id).all()
+    return books
+
+
 @router.post('/createBook')
 def create_book(
-    idUser: int,
     title: str,
     author: str,
+    Auth_user: Book = Depends(verify),
     db: Session = Depends(get_db)
 ):
-    Exists = db.query(User).filter_by(id=idUser).first()
+    Exists = db.query(User).filter_by(id=Auth_user.id).first()
 
     if not Exists:
         raise HTTPException(
@@ -30,7 +37,7 @@ def create_book(
     newBook = Book(
         title=title,
         author=author,
-        id_user=idUser
+        id_user=Auth_user.id
     )
     db.add(newBook)
     db.commit()
@@ -47,9 +54,10 @@ def update_book(
     idBook: int,
     title: str,
     author: str,
+    Auth_user: Book = Depends(verify),
     db: Session = Depends(get_db),
 ):
-    exists = db.query(Book).filter_by(id=idBook).first()
+    exists = db.query(Book).filter_by(id=Auth_user.id).first()
 
     if not exists:
         HTTPException(
@@ -74,6 +82,7 @@ def update_book(
 @router.delete('/deleteBook')
 def delete_book(
     idBook: int,
+    Auth_user: Book = Depends(verify),
     db: Session = Depends(get_db)
 ):
     exists = db.query(Book).filter_by(id=idBook).first()
