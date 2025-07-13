@@ -1,5 +1,5 @@
 from zoneinfo import ZoneInfo
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import jwt
 from fastapi.exceptions import HTTPException
 from passlib.context  import CryptContext

@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from acervo_digital.core.database import User, get_db
-from acervo_digital.core.security import get_password_hash
+from acervo_digital.core.security import get_password_hash, verify
 
 
 router = APIRouter(tags=["user"])
@@ -49,12 +49,12 @@ def create_user(
 
 @router.put('/updateUser')
 def update_user(
-    userId: int,
     username: Optional[str] = Form(None),
     password: Optional[str] = Form(None),
+    auth_user: User = Depends(verify),
     db: Session = Depends(get_db),
 ):
-    exists_user = db.query(User).filter_by(id=userId).first()
+    exists_user = db.query(User).filter_by(auth_user.id).first()
 
     if not exists_user:
         return JSONResponse(
@@ -77,10 +77,10 @@ def update_user(
 
 @router.delete('/deleteUser')
 def delete_user(
-    userId: int,
+    auth_user: User = Depends(verify),
     db: Session = Depends(get_db)
 ):
-    exists = db.query(User).filter_by(id=userId).first()
+    exists = db.query(User).filter_by(id=auth_user.id).first()
 
     if not exists:
         raise HTTPException(
