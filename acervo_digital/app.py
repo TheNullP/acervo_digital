@@ -1,9 +1,10 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
+from acervo_digital.core.database import User
 from acervo_digital.routers import user, book
 from acervo_digital.core import token
-from acervo_digital.core.token import oauth2_scheme
+from acervo_digital.core.security import oauth2_scheme, verify
 
 
 
@@ -20,5 +21,5 @@ def get_root(token: Annotated[str, Depends(oauth2_scheme)]):
     return JSONResponse(content={'msg':'Hello World.'})
 
 @app.get('/auth')
-async def auth(token: Annotated[str, Depends(oauth2_scheme)]):
-    return {'token': token}
+async def auth(token: User = Depends(verify)):
+    return token
