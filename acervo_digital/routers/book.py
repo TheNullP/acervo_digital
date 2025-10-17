@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session, query, session
 
 from acervo_digital.core.database import Book, User, get_db
 from acervo_digital.core.security import verify
@@ -19,6 +20,24 @@ def read_my_book(db: Session = Depends(get_db), Auth_user: Book = Depends(verify
     books = db.query(Book).filter_by(id_user=Auth_user.id).all()
     return books
 
+@router.get('/listBook')
+def list_book(
+    db: Session = Depends(get_db),
+    title: str | None = None,
+    author: str | None = None,
+    offset: int = 0,
+    limit: int = 10,
+):
+    query = select(Book)
+
+    if title:
+        query = query.where(Book.title.ilike(f'%{title}%'))
+    if author:
+        query = query.where(Book.author.ilike(f'%{author}%'))
+
+    query = query.offset(offset).limit(limit)
+    book = db.scalars(query).all()
+    return {'books': book}
 
 @router.post('/createBook')
 def create_book(

@@ -16,6 +16,7 @@ dependencies = [
     "passlib[bcrypt] (>=1.7.4,<2.0.0)",
     "pyjwt (>=2.10.1,<3.0.0)",
     "pydantic-settings (>=2.10.1,<3.0.0)",
+    "alembic (>=1.17.0,<2.0.0)",
 ]
 
 [tool.poetry]
@@ -23,7 +24,7 @@ packages = [{include = "acervo_digital", from = "src"}]
 
 [tool.taskipy.tasks]
 run = "uvicorn acervo_digital.app:app --host 0.0.0.0 --port 8088 --reload  --reload-exclude __pycache__ --reload-exclude .mypy_cache --reload-exclude .venv"
-# run = "fastapi dev acervo_digital/app.py --port 8088 --no-reload"
+# run = "fastapi dev acervo_digital/app.py --port 8088"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
